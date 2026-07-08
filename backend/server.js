@@ -249,3 +249,8 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Zöe Registration System running on port ${PORT}`);
 });
+
+// Catch-all route - serve index.html for all non-API routes (React router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
