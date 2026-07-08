@@ -5,8 +5,7 @@ function Calculator() {
     noShowRate: 20,
     staffHoursPerWeek: 30,
     copayCollection: 25,
-    revenuePerVisit: 150,
-    userEmail: ''
+    revenuePerVisit: 150
   });
 
   const [results, setResults] = useState(null);
@@ -50,31 +49,52 @@ function Calculator() {
 
           <div className="calc-group">
             <label>Current No-Show Rate (%)</label>
-            <input type="number" name="noShowRate" value={formData.noShowRate} onChange={handleChange} min="0" max="100" />
+            <input
+              type="number"
+              name="noShowRate"
+              value={formData.noShowRate}
+              onChange={handleChange}
+              min="0"
+              max="100"
+            />
             <span className="help-text">National pediatric average: 15-30%</span>
           </div>
 
           <div className="calc-group">
             <label>Staff Hours on Registration per Week</label>
-            <input type="number" name="staffHoursPerWeek" value={formData.staffHoursPerWeek} onChange={handleChange} min="0" />
+            <input
+              type="number"
+              name="staffHoursPerWeek"
+              value={formData.staffHoursPerWeek}
+              onChange={handleChange}
+              min="0"
+            />
             <span className="help-text">Hours spent on registration/data entry</span>
           </div>
 
           <div className="calc-group">
             <label>Current Copay Collection Rate (%)</label>
-            <input type="number" name="copayCollection" value={formData.copayCollection} onChange={handleChange} min="0" max="100" />
+            <input
+              type="number"
+              name="copayCollection"
+              value={formData.copayCollection}
+              onChange={handleChange}
+              min="0"
+              max="100"
+            />
             <span className="help-text">What % of copays you currently collect</span>
           </div>
 
           <div className="calc-group">
             <label>Average Revenue per Patient Visit ($)</label>
-            <input type="number" name="revenuePerVisit" value={formData.revenuePerVisit} onChange={handleChange} min="0" />
+            <input
+              type="number"
+              name="revenuePerVisit"
+              value={formData.revenuePerVisit}
+              onChange={handleChange}
+              min="0"
+            />
             <span className="help-text">Typical visit fee</span>
-          </div>
-
-          <div className="calc-group">
-            <label>Your Email (for results)</label>
-            <input type="email" name="userEmail" value={formData.userEmail} onChange={handleChange} required />
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
@@ -113,7 +133,7 @@ function Calculator() {
           </div>
 
           <div className="success-message">
-            Check your email for detailed results
+            ✓ Results sent to your email
           </div>
         </div>
       )}

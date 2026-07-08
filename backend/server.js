@@ -260,9 +260,9 @@ app.listen(PORT, () => {
 
 // ROI Calculator endpoint
 app.post('/api/calculator', async (req, res) => {
-  const { noShowRate, staffHoursPerWeek, copayCollection, revenuePerVisit, userEmail } = req.body;
+  const { noShowRate, staffHoursPerWeek, copayCollection, revenuePerVisit } = req.body;
 
-  if (!noShowRate || !staffHoursPerWeek || !copayCollection || !revenuePerVisit || !userEmail) {
+  if (!noShowRate || !staffHoursPerWeek || !copayCollection || !revenuePerVisit) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -319,7 +319,7 @@ app.post('/api/calculator', async (req, res) => {
     subject: 'Zoe Pediatrics ROI Calculator Submission',
     html: `
       <h2>ROI Calculator Submission</h2>
-      <p><strong>User Email:</strong> ${userEmail}</p>
+      
       <p><strong>No-Show Rate:</strong> ${noShowRate}%</p>
       <p><strong>Staff Hours/Week:</strong> ${staffHoursPerWeek}</p>
       <p><strong>Copay Collection Rate:</strong> ${copayCollection}%</p>
@@ -346,9 +346,9 @@ app.post('/api/calculator', async (req, res) => {
 
 // ROI Calculator endpoint
 app.post('/api/calculator', (req, res) => {
-  const { noShowRate, staffHoursPerWeek, copayCollection, revenuePerVisit, userEmail } = req.body;
+  const { noShowRate, staffHoursPerWeek, copayCollection, revenuePerVisit } = req.body;
 
-  if (!noShowRate || !staffHoursPerWeek || !copayCollection || !revenuePerVisit || !userEmail) {
+  if (!noShowRate || !staffHoursPerWeek || !copayCollection || !revenuePerVisit) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -405,7 +405,7 @@ app.post('/api/calculator', (req, res) => {
         subject: 'Zoe Pediatrics ROI Calculator Submission',
         html: `
           <h2>ROI Calculator Submission</h2>
-          <p><strong>User Email:</strong> ${userEmail}</p>
+          
           <p><strong>No-Show Rate:</strong> ${noShowRate}%</p>
           <p><strong>Staff Hours/Week:</strong> ${staffHoursPerWeek}</p>
           <p><strong>Copay Collection Rate:</strong> ${copayCollection}%</p>
