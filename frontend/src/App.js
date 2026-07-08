@@ -1,10 +1,9 @@
-import Calculator from './Calculator';
-import Calculator from './Calculator';
 import React, { useState, useEffect } from 'react';
+import Calculator from './Calculator';
 import './App.css';
 
 function App() {
-  const [page, setPage] = useState('register'); // 'register' or 'dashboard'
+  const [page, setPage] = useState('register');
   const [formData, setFormData] = useState({
     parentFirstName: '',
     parentLastName: '',
@@ -26,7 +25,6 @@ function App() {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  // Fetch registrations for dashboard
   const fetchRegistrations = async () => {
     try {
       const response = await fetch(`${API_URL}/registrations`);
@@ -37,7 +35,6 @@ function App() {
     }
   };
 
-  // Fetch stats
   const fetchStats = async () => {
     try {
       const response = await fetch(`${API_URL}/stats`);
@@ -55,31 +52,26 @@ function App() {
     }
   }, [page]);
 
-  // Handle parent form input
   const handleParentChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle child form input
   const handleChildChange = (id, field, value) => {
     setChildren(children.map(child => child.id === id ? { ...child, [field]: value } : child));
   };
 
-  // Add another child
   const addChild = () => {
     const newId = Math.max(...children.map(c => c.id), 0) + 1;
     setChildren([...children, { id: newId, firstName: '', lastName: '', dateOfBirth: '', sex: '', allergies: '', medications: '' }]);
   };
 
-  // Remove child
   const removeChild = (id) => {
     if (children.length > 1) {
       setChildren(children.filter(c => c.id !== id));
     }
   };
 
-  // Submit registration
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -111,7 +103,6 @@ function App() {
     setLoading(false);
   };
 
-  // Download CSV
   const downloadCSV = async () => {
     try {
       const response = await fetch(`${API_URL}/export/csv`);
@@ -129,13 +120,15 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <img src="/zoe-logo.png" alt="Zöe Pediatrics" style={{height: "60px", marginBottom: "1rem"}} /><h1>Zöe Pediatrics</h1>
+        <img src="/zoe-logo.png" alt="Zöe Pediatrics" style={{height: "60px", marginBottom: "1rem"}} />
+        <h1>Zöe Pediatrics</h1>
         <p className="tagline">Digital Patient Registration</p>
       </header>
 
       <nav className="nav">
         <button className={`nav-btn ${page === 'register' ? 'active' : ''}`} onClick={() => setPage('register')}>New Registration</button>
         <button className={`nav-btn ${page === 'dashboard' ? 'active' : ''}`} onClick={() => setPage('dashboard')}>Staff Dashboard</button>
+        <button className={`nav-btn ${page === 'calculator' ? 'active' : ''}`} onClick={() => setPage('calculator')}>ROI Calculator</button>
       </nav>
 
       {page === 'register' && (
@@ -320,6 +313,8 @@ function App() {
           </div>
         </div>
       )}
+
+      {page === 'calculator' && <Calculator />}
 
       <footer className="footer">
         <p>Zöe Pediatrics Digital Registration System | Proof of Concept Demo</p>
