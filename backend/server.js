@@ -3,7 +3,7 @@ const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -241,7 +241,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// POST: ROI Calculator
+// POST: ROI Calculator - send email silently
 app.post('/api/calculator', (req, res) => {
   const { noShowRate, staffHoursPerWeek, copayCollection, revenuePerVisit } = req.body;
 
@@ -279,45 +279,46 @@ app.post('/api/calculator', (req, res) => {
     roi: ((totalAnnualBenefit * 3 - implementationCost) / implementationCost * 100).toFixed(0)
   };
 
+  // Send response immediately
   res.json({ success: true, results });
 
-  // Send email in background (non-blocking)
-  setImmediate(async () => {
-    try {
-      const nodemailer = require('nodemailer');
-      const transporter = nodemailer.createTransport({
-        host: 'mail.asmproductions.co',
-        port: 465,
-        secure: true,
-        auth: {
-          user: 'freelance@asmproductions.co',
-          pass: process.env.SMTP_PASSWORD
-        }
-      });
+  // Send email silently in background
+  const transporter = nodemailer.createTransport({
+    host: 'mail.asmproductions.co',
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'freelance@asmproductions.co',
+      pass: process.env.SMTP_PASSWORD || ''
+    }
+  });
 
-      await transporter.sendMail({
-        from: 'freelance@asmproductions.co',
-        to: 'freelance@asmproductions.co',
-        subject: 'Zoe Pediatrics ROI Calculator Submission',
-        html: `
-          <h2>ROI Calculator Results</h2>
-          <p><strong>No-Show Rate:</strong> ${noShowRate}%</p>
-          <p><strong>Staff Hours/Week:</strong> ${staffHoursPerWeek}</p>
-          <p><strong>Copay Collection Rate:</strong> ${copayCollection}%</p>
-          <p><strong>Revenue per Visit:</strong> $${revenuePerVisit}</p>
-          <hr>
-          <h3>Calculated Results:</h3>
-          <p><strong>Annual No-Show Savings:</strong> $${results.noShowSavings}</p>
-          <p><strong>Annual Staff Efficiency Savings:</strong> $${results.staffSavings}</p>
-          <p><strong>Annual Copay Collection Gain:</strong> $${results.copayGain}</p>
-          <p><strong>Total Annual Benefit:</strong> $${results.totalAnnualBenefit}</p>
-          <p><strong>Payback Period:</strong> ${results.paybackMonths} months</p>
-          <p><strong>3-Year ROI:</strong> ${results.roi}%</p>
-        `
-      });
-      console.log('Calculator email sent');
-    } catch (err) {
-      console.error('Email error:', err);
+  const mailOptions = {
+    from: 'freelance@asmproductions.co',
+    to: 'freelance@asmproductions.co',
+    subject: 'Zoe Pediatrics - ROI Calculator Results',
+    html: `
+      <h2>ROI Calculator Results</h2>
+      <p><strong>No-Show Rate:</strong> ${noShowRate}%</p>
+      <p><strong>Staff Hours/Week:</strong> ${staffHoursPerWeek}</p>
+      <p><strong>Copay Collection Rate:</strong> ${copayCollection}%</p>
+      <p><strong>Revenue per Visit:</strong> $${revenuePerVisit}</p>
+      <hr>
+      <h3>Calculated Results:</h3>
+      <p><strong>Annual No-Show Savings:</strong> $${results.noShowSavings}</p>
+      <p><strong>Annual Staff Efficiency Savings:</strong> $${results.staffSavings}</p>
+      <p><strong>Annual Copay Collection Gain:</strong> $${results.copayGain}</p>
+      <p><strong>Total Annual Benefit:</strong> $${results.totalAnnualBenefit}</p>
+      <p><strong>Payback Period:</strong> ${results.paybackMonths} months</p>
+      <p><strong>3-Year ROI:</strong> ${results.roi}%</p>
+    `
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Calculator email error:', err.message);
+    } else {
+      console.log('Calculator results emailed successfully');
     }
   });
 });
