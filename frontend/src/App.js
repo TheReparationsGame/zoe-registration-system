@@ -127,7 +127,7 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>Zöe Pediatrics</h1>
+        <img src="/zoe-logo.png" alt="Zöe Pediatrics" style={{height: "60px", marginBottom: "1rem"}} /><h1>Zöe Pediatrics</h1>
         <p className="tagline">Digital Patient Registration</p>
       </header>
 
