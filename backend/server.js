@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Database setup
 const dbPath = process.env.DATABASE_URL || './registrations.db';
@@ -66,8 +66,6 @@ db.serialize(() => {
   `);
 });
 
-// Routes
-
 // POST: Submit new registration
 app.post('/api/registrations', (req, res) => {
   const { parentFirstName, parentLastName, email, phone, address, city, state, zip, insuranceProvider, insuranceMemberId, children } = req.body;
@@ -89,7 +87,6 @@ app.post('/api/registrations', (req, res) => {
         return res.status(500).json({ error: 'Failed to create registration' });
       }
 
-      // Insert children
       const childPromises = children.map(child => {
         return new Promise((resolve, reject) => {
           const childId = uuidv4();
@@ -107,7 +104,6 @@ app.post('/api/registrations', (req, res) => {
 
       Promise.all(childPromises)
         .then(() => {
-          // Log mock email
           const emailId = uuidv4();
           db.run(
             `INSERT INTO confirmationEmails (id, registrationId, parentEmail) VALUES (?, ?, ?)`,
@@ -136,7 +132,7 @@ app.post('/api/registrations', (req, res) => {
   );
 });
 
-// GET: Retrieve all registrations (staff dashboard)
+// GET: Retrieve all registrations
 app.get('/api/registrations', (req, res) => {
   db.all('SELECT * FROM registrations ORDER BY createdAt DESC', (err, registrations) => {
     if (err) {
@@ -144,7 +140,6 @@ app.get('/api/registrations', (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch registrations' });
     }
 
-    // Get children for each registration
     const promises = registrations.map(reg => {
       return new Promise((resolve) => {
         db.all('SELECT * FROM children WHERE registrationId = ?', [reg.id], (err, children) => {
@@ -246,7 +241,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Catch-all: Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Zöe Registration System running on port ${PORT}`);
 });
-
